@@ -1,0 +1,20 @@
+name: "Release repository"
+description: "Distribute compressed files containing a recursively cloned working directory of your repository"
+
+branding:
+  icon: "arrow-up-circle"
+  color: "green"
+
+inputs:
+  name:
+    description: project name
+    required: true
+
+  token:
+    description: The token used to make requests to the GitHub API. It's NOT used to make commits and should not be changed.
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
