@@ -26,7 +26,8 @@ def main():
         # For private repos, git needs authentication (but set so that the
         # remote URL doesn't embed the temporary credentials in the zip file or
         # even store the temporary credential token in the filesystem.)
-        subprocess.run(["git", "config", "--global", "credential.https://github.com.username", github_actor], check=True)
+        subprocess.run(["git", "config", "--global", "credential.https://github.com.username", github_actor],
+                       check=True)
         helper_cmd = "!f() { test \"$1\" = get && echo \"password=$INPUT_TOKEN\"; }; f"  # shell command
         subprocess.run(["git", "config", "--global", "credential.https://github.com.helper", helper_cmd], check=True)
 
@@ -36,17 +37,24 @@ def main():
 
     print("Doing a full recursive clone of {} ({}) into {}...".format(git_url, tag, directory))
     # note: it may be easier to use github's "checkout" action here, with the correct args
-    subprocess.run(["git", "clone", "--recursive", "--branch", tag, git_url, directory], check=True)
+    subprocess.run(
+        ["git", "clone", "--shallow-submodules", "--depth=1", "--recursive", "--branch=" + tag, git_url, directory],
+        check=True)
 
     zipfile = "{}.zip".format(directory)
     print("Zipping {}...".format(zipfile))
     subprocess.run(["/usr/bin/7z", "a", "-mx=9", "-tzip", zipfile, directory], check=True)
 
+    tarfile = "{}.tar.gz".format(directory)
+    print("tar {}...".format(tarfile))
+    subprocess.run(["tar", "czf", tarfile, directory], check=True)
+
     try:
         release = repo.get_release(tag)
         print("Existing release found...")
-        if any(asset.name == zipfile for asset in release.get_assets()):
-            raise SystemExit("A release for tag {} already exists and has a zip file {}. Workflow configured wrong?".format(tag, zipfile))
+        if any((asset.name == zipfile or asset.name == tarfile) for asset in release.get_assets()):
+            raise SystemExit("A release for tag {} already exists and has a file {}. Workflow configured wrong?".format(
+                tag, directory))
     except GithubException:
         print("Creating release...")
         is_prerelease = "-" in tag  # tags like vX.Y-something are pre-releases
@@ -56,6 +64,9 @@ def main():
 
     print("Attaching zipfile...")
     release.upload_asset(zipfile)
+
+    print("Attaching tar...")
+    release.upload_asset(tarfile)
 
     print("Release URL is {}".format(release.html_url))
 
