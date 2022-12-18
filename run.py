@@ -42,15 +42,13 @@ def main():
         ["git", "clone", "--shallow-submodules", "--depth=1", "--recursive", "--branch=" + tag, git_url, directory],
         check=True)
 
-    git_tag_p = subprocess.run("git describe --tags", shell=True, stdout=subprocess.PIPE, check=True)
-    git_tag_long_p = subprocess.run("git describe --tags --long", shell=True, stdout=subprocess.PIPE, check=True)
-    git_branch_p = subprocess.run("git rev-parse --abbrev-ref HEAD", shell=True, stdout=subprocess.PIPE, check=True)
-    git_commit_p = subprocess.run("git rev-parse --short HEAD", shell=True, stdout=subprocess.PIPE, check=True)
-    git_commit_long_p = subprocess.run("git rev-parse HEAD", shell=True, stdout=subprocess.PIPE, check=True)
-    git_commit_date_p = subprocess.run("git log -1 --date=format:%Y%m%d%H%M%S --format=%ad",
-                                       shell=True,
-                                       stdout=subprocess.PIPE,
-                                       check=True)
+    git_tag_p = subprocess.run("git describe --tags", shell=True, stdout=subprocess.PIPE, check=True, cwd=directory)
+    git_tag_long_p = subprocess.run("git describe --tags --long", shell=True, stdout=subprocess.PIPE, check=True, cwd=directory)
+    git_branch_p = subprocess.run("git rev-parse --abbrev-ref HEAD", shell=True, stdout=subprocess.PIPE, check=True, cwd=directory)
+    git_commit_p = subprocess.run("git rev-parse --short HEAD", shell=True, stdout=subprocess.PIPE, check=True, cwd=directory)
+    git_commit_long_p = subprocess.run("git rev-parse HEAD", shell=True, stdout=subprocess.PIPE, check=True, cwd=directory)
+    git_commit_date_p = subprocess.run("git log -1 --date=format:%Y%m%d%H%M%S --format=%ad", shell=True, stdout=subprocess.PIPE, check=True, cwd=directory)
+
     info = {}
     info["git_tag"] = git_tag_p.stdout.decode("utf-8").strip() if git_tag_p.stdout else "none"
     info["git_tag_long"] = git_tag_long_p.stdout.decode("utf-8").strip() if git_tag_long_p.stdout else "none"
