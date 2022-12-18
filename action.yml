@@ -9,6 +9,7 @@ inputs:
   name:
     description: project name
     required: true
+    default: ${{ github.event.repository.name }}
 
   token:
     description: The token used to make requests to the GitHub API. It's NOT used to make commits and should not be changed.
