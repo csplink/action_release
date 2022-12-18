@@ -1,0 +1,16 @@
+name: 🔖 release
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  release:
+    name: 🔖 create release compressed file
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔖 create a recursive clone compressed file
+        uses: csplink/action_release/@master
+        with:
+          name: csp_hal_apm32f1
