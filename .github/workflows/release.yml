@@ -12,5 +12,3 @@ jobs:
     steps:
       - name: 🔖 create a recursive clone compressed file
         uses: csplink/action_release/@master
-        with:
-          name: csp_hal_apm32f1
