@@ -3,6 +3,7 @@
 from github import Github, GithubException
 import os
 import subprocess
+import json
 
 
 def main():
@@ -40,6 +41,28 @@ def main():
     subprocess.run(
         ["git", "clone", "--shallow-submodules", "--depth=1", "--recursive", "--branch=" + tag, git_url, directory],
         check=True)
+
+    git_tag_p = subprocess.run("git describe --tags", shell=True, stdout=subprocess.PIPE, check=True)
+    git_tag_long_p = subprocess.run("git describe --tags --long", shell=True, stdout=subprocess.PIPE, check=True)
+    git_branch_p = subprocess.run("git rev-parse --abbrev-ref HEAD", shell=True, stdout=subprocess.PIPE, check=True)
+    git_commit_p = subprocess.run("git rev-parse --short HEAD", shell=True, stdout=subprocess.PIPE, check=True)
+    git_commit_long_p = subprocess.run("git rev-parse HEAD", shell=True, stdout=subprocess.PIPE, check=True)
+    git_commit_date_p = subprocess.run("git log -1 --date=format:%Y%m%d%H%M%S --format=%ad",
+                                       shell=True,
+                                       stdout=subprocess.PIPE,
+                                       check=True)
+    info = {}
+    info["git_tag"] = git_tag_p.stdout.decode("utf-8").strip() if git_tag_p.stdout else "none"
+    info["git_tag_long"] = git_tag_long_p.stdout.decode("utf-8").strip() if git_tag_long_p.stdout else "none"
+    info["git_branch"] = git_branch_p.stdout.decode("utf-8").strip() if git_branch_p.stdout else "none"
+    info["git_commit"] = git_commit_p.stdout.decode("utf-8").strip() if git_commit_p.stdout else "none"
+    info["git_commit_long"] = git_commit_long_p.stdout.decode("utf-8").strip() if git_commit_long_p.stdout else "none"
+    info["git_commit_date"] = git_commit_date_p.stdout.decode("utf-8").strip() if git_commit_date_p.stdout else "none"
+
+    with open(directory + "/version.json", 'w') as fp:
+        json.dump(info, fp, indent=4)
+
+    subprocess.run("find . -name '.git' | xargs rm -rf", shell=True, check=True)
 
     zipfile = "{}.zip".format(directory)
     print("Zipping {}...".format(zipfile))
