@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    name: 🔖 create release compressed file
+    name: 🔖 release repository
     runs-on: ubuntu-latest
     steps:
       - name: 🔖 create a recursive clone compressed file
