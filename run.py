@@ -62,11 +62,11 @@ def main():
 
     subprocess.run("find . -name '.git' | xargs rm -rf", shell=True, check=True)
 
-    zipfile = "{}.zip".format(directory)
+    zipfile = "{}.zip".format(repo_name)
     print("Zipping {}...".format(zipfile))
     subprocess.run(["/usr/bin/7z", "a", "-mx=9", "-tzip", zipfile, directory], check=True)
 
-    tarfile = "{}.tar.gz".format(directory)
+    tarfile = "{}.tar.gz".format(repo_name)
     print("tar {}...".format(tarfile))
     subprocess.run(["tar", "czf", tarfile, directory], check=True)
 
@@ -80,7 +80,11 @@ def main():
         print("Creating release...")
         is_prerelease = "-" in tag  # tags like vX.Y-something are pre-releases
         release_repo_name = os.environ.get('INPUT_NAME', repo_name)
-        name = "{} {} {}".format(release_repo_name, "Pre-release" if is_prerelease else "Release", tag)
+        name = ""
+        if is_prerelease:
+            name = f"{release_repo_name} Pre-release {tag}"
+        else:
+            name = f"{release_repo_name} {tag}"
         release = repo.create_git_release(tag, name, "(Draft created by Action)", draft=True, prerelease=is_prerelease)
 
     print("Attaching zipfile...")
