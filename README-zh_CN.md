@@ -39,14 +39,14 @@
             <img src="https://img.shields.io/badge/video-bilibili-FB7299?style=flat" alt="bilibili" />
         </a>
     </div>
-    <b>CSP: Tools for flexible configuration of chips and boards.</b><br/>
-    <i>Action for release.</i><br/>
+    <b>CSP：用于灵活配置芯片与板卡的工具</b><br/>
+    <i>用于 Git 发布版本的 Action</i><br/>
 </div>
 
-**English** | [中文](README-zh_CN.md)
+[English](README.md) | **中文**
 
-## ✨ Features
+## ✨ 特性
 
-- 🧱 Support for submodules
-- 👷 Automatically create version.json
-- 🚚 Automatically upload release assets
+- 🧱 支持子模块
+- 👷 自动创建 version.json
+- 🚚 自动上传 release 附件
